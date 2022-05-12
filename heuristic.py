@@ -58,9 +58,10 @@ def gen_links(page_link):
         if link.has_attr('href'):
             linked_page_url = link['href']
             if linked_page_url.startswith('/wiki') and ':' not in linked_page_url:
+                # print(linked_page_url)
                 results.append("https://en.wikipedia.org" + linked_page_url)
 
-    return results                    
+    return list(set(results))
 
 
 def get_best_class(link: str):
@@ -84,10 +85,14 @@ def get_best_class(link: str):
     return highest_class[0]
 
 
-def get_utility(link, class_):
+def fetch_page(link):
     html = urllib.request.urlopen(link).read()
+    print("Fetched webpage")
     text = [text_from_html(html)]
+    return text
 
+
+def get_utility(text, class_):
     open("test", "w").write(text[0])
 
     pipe_file = open("pipe", "rb")
@@ -104,13 +109,14 @@ def get_utility(link, class_):
     index = list(gnb.classes_).index(class_)
 
     probabilties = gnb.predict_proba(pca_test_data)
-    print(probabilties)
+    print("Processed webpage")
+    # print(probabilties)
     return probabilties[0][index]
 
 
 if __name__ == "__main__":
-    url = "https://en.wikipedia.org/wiki/Pilamedu_railway_station"
-    url2 = "https://en.wikipedia.org/wiki/Coimbatore_International_Airport"
+    url = "https://en.wikipedia.org/wiki/Metal"
+    # url2 = "https://en.wikipedia.org/wiki/Coimbatore_International_Airport"
 
     # best_class = get_best_class(url)
 
@@ -119,3 +125,4 @@ if __name__ == "__main__":
     # print(get_best_class(url2))
 
     print(gen_links(url))
+    print(len(gen_links(url)))
