@@ -44,7 +44,26 @@ def text_from_html(body):
     return u" ".join(t.strip() for t in visible_texts)
 
 
-def get_heuristic(link: str):
+import requests
+
+def gen_links(page_link):
+    res = requests.get(page_link)
+    soup = BeautifulSoup(res.content, 'html.parser')
+
+    links = soup.find_all('a')
+
+    results = []
+
+    for link in links:
+        if link.has_attr('href'):
+            linked_page_url = link['href']
+            if linked_page_url.startswith('/wiki') and ':' not in linked_page_url:
+                results.append("https://en.wikipedia.org" + linked_page_url)
+
+    return results                    
+
+
+def get_best_class(link: str):
     html = urllib.request.urlopen(link).read()
     text = [text_from_html(html)]
 
@@ -62,14 +81,41 @@ def get_heuristic(link: str):
     pca_test_data = pca.transform(test_data.toarray())
 
     highest_class = gnb.predict(pca_test_data)
-    index = list(gnb.classes_).index(highest_class)
+    return highest_class[0]
 
+
+def get_utility(link, class_):
+    html = urllib.request.urlopen(link).read()
+    text = [text_from_html(html)]
+
+    open("test", "w").write(text[0])
+
+    pipe_file = open("pipe", "rb")
+    pca_file = open("pca", "rb")
+    model_file = open("model", "rb")
+
+    pipe = pickle5.load(pipe_file)
+    pca = pickle5.load(pca_file)
+    gnb = pickle5.load(model_file)
+
+    test_data = pipe.transform(text)
+    pca_test_data = pca.transform(test_data.toarray())
+
+    index = list(gnb.classes_).index(class_)
 
     probabilties = gnb.predict_proba(pca_test_data)
+    print(probabilties)
     return probabilties[0][index]
 
 
 if __name__ == "__main__":
-    URL = "https://en.wikipedia.org/wiki/Telecommunications"
-    get_heuristic(URL)
+    url = "https://en.wikipedia.org/wiki/Pilamedu_railway_station"
+    url2 = "https://en.wikipedia.org/wiki/Coimbatore_International_Airport"
 
+    # best_class = get_best_class(url)
+
+    # print(get_utility(url2, best_class))
+
+    # print(get_best_class(url2))
+
+    print(gen_links(url))
