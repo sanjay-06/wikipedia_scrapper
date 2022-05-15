@@ -7,7 +7,7 @@ from core.search.node import Node
 
 def search(source, target):
     target_class = Classifier.predict_class(target)
-
+    print(f"Target class: {target_class}")
     current_page = Node(source, None)
     unexplored_pages = []
 
@@ -16,7 +16,7 @@ def search(source, target):
     while True:
         print(f"At page {current_page.link[current_page.link.rindex('/') : ]}")
         current_page_html = Scrapper.load_page(current_page.link)
-        links = [link for link in Parser.parse_html_links(current_page_html, link_filters.link_filters) if link not in visited_pages]
+        links = [link for link in Parser.parse_html_links(current_page_html, link_filters.link_filters) if Node(link, None) not in visited_pages and link != current_page.link]
         print(f"Number of links: {len(links)}")
         if target in links:
             print("Reached target")
