@@ -3,18 +3,19 @@ from core.search.classifier import Classifier
 from core.scrap import Scrapper, Parser, ConcurrentScrapper
 from core.scrap import link_filters
 import time
+from core.search.node import Node
 
 def search(source, target):
     target_class = Classifier.predict_class(target)
 
-    current_page = source
+    current_page = Node(source, None)
     unexplored_pages = []
 
     visited_pages = set()
 
     while True:
-        print(f"At page {current_page[current_page.rindex('/') : ]}")
-        current_page_html = Scrapper.load_page(current_page)
+        print(f"At page {current_page.link[current_page.link.rindex('/') : ]}")
+        current_page_html = Scrapper.load_page(current_page.link)
         links = [link for link in Parser.parse_html_links(current_page_html, link_filters.link_filters) if link not in visited_pages]
         print(f"Number of links: {len(links)}")
         if target in links:
@@ -33,7 +34,7 @@ def search(source, target):
         
         links_utilities = Classifier.get_utilities(links_text, target_class)
         for link, utility in zip(links, links_utilities):
-            unexplored_pages.append((link, utility))
+            unexplored_pages.append((Node(link, current_page), utility))
         
         unexplored_pages.sort(key=lambda x: x[1], reverse=True)
 
@@ -41,5 +42,11 @@ def search(source, target):
         print(unexplored_pages[:5])
         visited_pages.add(current_page)
         current_page, _ = unexplored_pages.pop(0)
+    
+    print(target)
+    n = current_page
 
+    while n is not None:
+        print(n.link)
+        n = n.parent
 
