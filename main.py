@@ -7,4 +7,4 @@ if __name__ == "__main__":
     SOURCE = "https://en.wikipedia.org/wiki/Wikipedia:Very_short_featured_articles"
     TARGET = "https://en.wikipedia.org/wiki/Google"
 
-    search(SOURCE, TARGET)
+    print(search(SOURCE, TARGET))

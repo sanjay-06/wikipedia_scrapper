@@ -1,11 +1,11 @@
 from core.scrap import Scrapper, Parser
-import pickle5
+import pickle
 import time
 
 class Classifier:
-    pipe = pickle5.load(open("./model/pipe", "rb"))
-    pca = pickle5.load(open("./model/pca", "rb"))
-    model = pickle5.load(open("./model/model", "rb"))
+    pipe = pickle.load(open("./model/pipe", "rb"))
+    pca = pickle.load(open("./model/pca", "rb"))
+    model = pickle.load(open("./model/model", "rb"))
 
     @staticmethod
     def predict_class(link: str):

@@ -10,6 +10,7 @@ def search(source, target):
     print(f"Target class: {target_class}")
     current_page = Node(source, None)
     unexplored_pages = []
+    link_list=[]
 
     visited_pages = set()
 
@@ -45,8 +46,8 @@ def search(source, target):
     
     print(target)
     n = current_page
-
     while n is not None:
-        print(n.link)
+        link_list.append(n.link)
         n = n.parent
-
+    
+    return link_list
